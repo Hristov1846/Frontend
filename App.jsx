@@ -1,11 +1,11 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-// Страници
+// Страници (със същото име като файловете ти)
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
-import ProfilePage from "./pages/ProfilePage.jsx";   // <- правилното име
+import ProfilePage from "./pages/ProfilePage.jsx";
 import Marketplace from "./pages/Marketplace.jsx";
 import Wallet from "./pages/Wallet.jsx";
 
