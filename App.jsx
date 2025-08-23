@@ -1,26 +1,28 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Страници
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Profile from "./pages/Profile";
-import Marketplace from "./pages/Marketplace";
-import Wallet from "./pages/Wallet";
+import Home from "./pages/Home.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Profile from "./pages/Profile.jsx";
+import Marketplace from "./pages/Marketplace.jsx";
+import Wallet from "./pages/Wallet.jsx";
 
 function App() {
   return (
-    <div className="bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 min-h-screen text-white">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile/:id" element={<Profile />} />
-        <Route path="/marketplace" element={<Marketplace />} />
-        <Route path="/wallet" element={<Wallet />} />
-      </Routes>
-    </div>
+    <BrowserRouter>
+      <div className="bg-gradient-to-r from-teal-100 to-blue-100 min-h-screen">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/wallet" element={<Wallet />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
