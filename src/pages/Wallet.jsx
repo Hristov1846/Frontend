@@ -1,129 +1,140 @@
-import React, { useState } from "react";
+// frontend/src/pages/Wallet.jsx
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-function Wallet() {
-  const [balance, setBalance] = useState(1000); // стартови V-Coins
-  const [transactions, setTransactions] = useState([
-    { id: 1, type: "Купуване", amount: 500, date: "2025-08-01" },
-    { id: 2, type: "Изпращане", amount: -200, date: "2025-08-10" },
-  ]);
+export default function Wallet() {
+  const [balance, setBalance] = useState(0);
+  const [amount, setAmount] = useState("");
+  const [recipient, setRecipient] = useState("");
+  const [transactions, setTransactions] = useState([]);
 
-  const [sendAmount, setSendAmount] = useState("");
-  const [buyAmount, setBuyAmount] = useState("");
+  useEffect(() => {
+    fetchWallet();
+    fetchTransactions();
+  }, []);
 
-  // Купуване на V-Coins
-  const buyCoins = () => {
-    const amount = parseInt(buyAmount);
-    if (!amount || amount <= 0) return alert("Въведи валидна сума!");
-    setBalance(balance + amount);
-    setTransactions([
-      ...transactions,
-      {
-        id: transactions.length + 1,
-        type: "Купуване",
-        amount: amount,
-        date: new Date().toLocaleDateString(),
-      },
-    ]);
-    setBuyAmount("");
+  const fetchWallet = async () => {
+    try {
+      const { data } = await axios.get("/api/wallet/balance");
+      setBalance(data.balance);
+    } catch (err) {
+      console.error("Error fetching wallet:", err);
+    }
   };
 
-  // Изпращане на V-Coins
-  const sendCoins = () => {
-    const amount = parseInt(sendAmount);
-    if (!amount || amount <= 0) return alert("Въведи валидна сума!");
-    if (amount > balance) return alert("Нямаш достатъчно V-Coins!");
-    setBalance(balance - amount);
-    setTransactions([
-      ...transactions,
-      {
-        id: transactions.length + 1,
-        type: "Изпращане",
-        amount: -amount,
-        date: new Date().toLocaleDateString(),
-      },
-    ]);
-    setSendAmount("");
+  const fetchTransactions = async () => {
+    try {
+      const { data } = await axios.get("/api/wallet/transactions");
+      setTransactions(data);
+    } catch (err) {
+      console.error("Error fetching transactions:", err);
+    }
+  };
+
+  const handleDeposit = async () => {
+    try {
+      await axios.post("/api/wallet/deposit", { amount });
+      setAmount("");
+      fetchWallet();
+      fetchTransactions();
+    } catch (err) {
+      console.error("Deposit error:", err);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      await axios.post("/api/wallet/withdraw", { amount });
+      setAmount("");
+      fetchWallet();
+      fetchTransactions();
+    } catch (err) {
+      console.error("Withdraw error:", err);
+    }
+  };
+
+  const handleSend = async () => {
+    try {
+      await axios.post("/api/wallet/send", { recipient, amount });
+      setRecipient("");
+      setAmount("");
+      fetchWallet();
+      fetchTransactions();
+    } catch (err) {
+      console.error("Send error:", err);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 text-white p-6">
-      {/* Заглавие */}
-      <h1 className="text-3xl font-bold mb-6 text-center">💰 Моето портмоне</h1>
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 flex flex-col items-center p-6">
+      <h1 className="text-4xl font-extrabold text-white mb-6">💰 V-Coins Wallet</h1>
 
       {/* Баланс */}
-      <div className="bg-black/40 rounded-lg p-6 text-center mb-6">
-        <h2 className="text-xl">Текущ баланс</h2>
-        <p className="text-4xl font-bold mt-2">{balance} V-Coins</p>
+      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md mb-6">
+        <h2 className="text-xl font-bold text-gray-800">Баланс</h2>
+        <p className="text-3xl font-extrabold text-green-600 mt-2">{balance} V-Coins</p>
       </div>
 
-      {/* Купуване */}
-      <div className="bg-black/40 rounded-lg p-6 mb-6">
-        <h2 className="text-lg font-bold mb-2">Купи V-Coins</h2>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            value={buyAmount}
-            onChange={(e) => setBuyAmount(e.target.value)}
-            placeholder="Сума"
-            className="p-2 rounded-lg text-black flex-1"
-          />
-          <button
-            onClick={buyCoins}
-            className="bg-green-500 px-4 py-2 rounded-lg hover:bg-green-600"
-          >
-            Купи
-          </button>
-        </div>
-      </div>
+      {/* Действия */}
+      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md space-y-4 mb-6">
+        <h2 className="text-xl font-bold text-gray-800">Управление</h2>
 
-      {/* Изпращане */}
-      <div className="bg-black/40 rounded-lg p-6 mb-6">
-        <h2 className="text-lg font-bold mb-2">Изпрати V-Coins</h2>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            value={sendAmount}
-            onChange={(e) => setSendAmount(e.target.value)}
-            placeholder="Сума"
-            className="p-2 rounded-lg text-black flex-1"
-          />
+        <input
+          type="number"
+          placeholder="Сума"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+        />
+
+        <div className="flex gap-3">
           <button
-            onClick={sendCoins}
-            className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600"
+            onClick={handleDeposit}
+            className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
           >
-            Изпрати
+            🔼 Зареди
+          </button>
+          <button
+            onClick={handleWithdraw}
+            className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+          >
+            🔽 Изтегли
           </button>
         </div>
+
+        <input
+          type="text"
+          placeholder="Потребител ID за изпращане"
+          value={recipient}
+          onChange={(e) => setRecipient(e.target.value)}
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+        />
+        <button
+          onClick={handleSend}
+          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+        >
+          📤 Изпрати V-Coins
+        </button>
       </div>
 
       {/* История */}
-      <div className="bg-black/40 rounded-lg p-6">
-        <h2 className="text-lg font-bold mb-4">История на транзакциите</h2>
-        {transactions.length === 0 ? (
-          <p>Все още няма транзакции.</p>
-        ) : (
-          <ul className="space-y-2">
-            {transactions.map((t) => (
-              <li
-                key={t.id}
-                className="flex justify-between bg-white/10 px-4 py-2 rounded-lg"
-              >
-                <span>{t.type}</span>
-                <span
-                  className={
-                    t.amount > 0 ? "text-green-400" : "text-red-400"
-                  }
-                >
-                  {t.amount > 0 ? `+${t.amount}` : t.amount} V-Coins
+      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">История на транзакции</h2>
+        <ul className="space-y-2 max-h-60 overflow-y-auto">
+          {transactions.length > 0 ? (
+            transactions.map((t, i) => (
+              <li key={i} className="p-3 border rounded-lg flex justify-between">
+                <span>{t.type} → {t.details}</span>
+                <span className={t.type === "deposit" ? "text-green-600" : "text-red-600"}>
+                  {t.amount} V-Coins
                 </span>
-                <span className="text-sm">{t.date}</span>
               </li>
-            ))}
-          </ul>
-        )}
+            ))
+          ) : (
+            <p className="text-gray-500">Няма транзакции</p>
+          )}
+        </ul>
       </div>
     </div>
   );
 }
-
-export default Wallet;
