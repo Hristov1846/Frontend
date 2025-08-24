@@ -1,8 +1,8 @@
-import React, { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -12,9 +12,9 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const login = (data) => {
-    setUser(data);
-    localStorage.setItem("user", JSON.stringify(data));
+  const login = (userData) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
   const logout = () => {
@@ -27,4 +27,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}
