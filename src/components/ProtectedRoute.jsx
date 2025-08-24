@@ -1,15 +1,8 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
-// ⚠️ Тук е опростена версия — може да се връзва с контекст или Redux
-function ProtectedRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem("user")); // примерно пазим user в localStorage
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
+export default function ProtectedRoute({ children }) {
+  const { user } = useContext(AuthContext);
+  return user ? children : <Navigate to="/login" />;
 }
-
-export default ProtectedRoute;
