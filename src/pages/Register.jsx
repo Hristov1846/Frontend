@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
 export default function Register() {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,10 +14,10 @@ export default function Register() {
     setError("");
 
     try {
-      await api.post("/auth/register", { name, email, password });
-      navigate("/login"); // след регистрация прехвърляме към login
+      await api.post("/auth/register", { username, email, password });
+      navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message || "Грешка при регистрация ❌");
     }
   };
 
@@ -32,10 +32,10 @@ export default function Register() {
 
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Username"
           className="w-full p-2 border rounded mb-3"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
 
