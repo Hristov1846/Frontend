@@ -1,26 +1,39 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-
-// Страници
-import Home from "./pages/Home.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import Profile from "./pages/ProfilePage.jsx";
-import Marketplace from "./pages/Marketplace.jsx";
-import Wallet from "./pages/Wallet.jsx";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import Navbar from "./components/Navbar";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <div className="bg-gradient-to-r from-teal-100 to-blue-100 min-h-screen">
+    <AuthProvider>
+      <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profile/:id" element={<Profile />} />
-        <Route path="/marketplace" element={<Marketplace />} />
-        <Route path="/wallet" element={<Wallet />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/:id"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-    </div>
+    </AuthProvider>
   );
 }
 
