@@ -1,14 +1,14 @@
 import axios from "axios";
 
-// ⚡️ ТУК е адреса на твоя бекенд от Render
+// ⚡️ Backend URL от Render
 const API_URL = "https://backend-bogb.onrender.com/api";
 
-const instance = axios.create({
+const api = axios.create({
   baseURL: API_URL,
-  withCredentials: true, // ако използваш cookies/token
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-export default instance;
+export default api;
