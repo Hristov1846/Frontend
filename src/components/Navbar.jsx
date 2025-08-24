@@ -1,23 +1,40 @@
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
-function Navbar({ user }) {
+function Navbar() {
+  const { user } = useContext(AuthContext);
+
   return (
-    <nav className="flex space-x-6 bg-gray-800 p-4">
-      <Link to="/" className="text-white hover:underline">Home</Link>
-      <Link to="/marketplace" className="text-white hover:underline">Marketplace</Link>
-      <Link to="/wallet" className="text-white hover:underline">Wallet</Link>
-      <Link to="/assistant" className="text-white hover:underline">AI Assistant</Link>
+    <nav className="bg-gray-900 text-white p-4 flex justify-between items-center">
+      <div className="flex space-x-4">
+        <Link to="/" className="hover:underline">Home</Link>
+        {user && (
+          <>
+            <Link to="/profile" className="hover:underline">Profile</Link>
+            <Link to="/wallet" className="hover:underline">Wallet</Link>
+            <Link to="/assistant" className="hover:underline">AI Assistant</Link>
+            <Link to="/marketplace" className="hover:underline">Marketplace</Link>
+            <Link to="/live/123456" className="hover:underline">Live</Link>
+          </>
+        )}
+        {user?.isAdmin && (
+          <Link to="/admin" className="hover:underline text-red-400">
+            Admin
+          </Link>
+        )}
+      </div>
 
-      {/* Примерен линк към Live — реално ID ще идва от backend */}
-      <Link to="/live/123456" className="text-white hover:underline">Live</Link>
-
-      {/* Примерен линк към Chat — реално ID ще е userId */}
-      <Link to="/chat/123" className="text-white hover:underline">Chat</Link>
-
-      {/* Само за админ */}
-      {user?.isAdmin && (
-        <Link to="/admin" className="text-white hover:underline">Admin</Link>
-      )}
+      <div>
+        {!user ? (
+          <>
+            <Link to="/login" className="hover:underline">Login</Link>
+            <Link to="/register" className="ml-4 hover:underline">Register</Link>
+          </>
+        ) : (
+          <span>Welcome, {user.username}</span>
+        )}
+      </div>
     </nav>
   );
 }
