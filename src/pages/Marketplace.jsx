@@ -1,110 +1,141 @@
-// frontend/src/pages/Marketplace.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api/axios";
 
-export default function Marketplace() {
-  const [items, setItems] = useState([]);
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
+const Marketplace = () => {
+  const [products, setProducts] = useState([]);
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    price: "",
+    image: "",
+    category: "",
+  });
 
   useEffect(() => {
-    fetchItems();
+    fetchProducts();
   }, []);
 
-  const fetchItems = async () => {
+  const fetchProducts = async () => {
     try {
-      const { data } = await axios.get("/api/marketplace");
-      setItems(data);
+      const res = await API.get("/marketplace");
+      setProducts(res.data);
     } catch (err) {
-      console.error("Error fetching items:", err);
+      console.error("Error loading products:", err.message);
     }
   };
 
-  const handleAddItem = async () => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post("/api/marketplace", { title, description, price });
-      setTitle("");
-      setDescription("");
-      setPrice("");
-      fetchItems();
+      await API.post("/marketplace", form);
+      setForm({ title: "", description: "", price: "", image: "", category: "" });
+      fetchProducts();
+      alert("Product created!");
     } catch (err) {
-      console.error("Error adding item:", err);
+      alert("Error creating product");
     }
   };
 
-  const handleBuyItem = async (itemId) => {
+  const handleBuy = async (id) => {
     try {
-      await axios.post(`/api/marketplace/buy/${itemId}`);
-      fetchItems();
+      await API.post(`/marketplace/buy/${id}`);
+      fetchProducts();
+      alert("Product bought successfully!");
     } catch (err) {
-      console.error("Error buying item:", err);
+      alert("Error buying product");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-400 to-orange-600 p-6 flex flex-col items-center">
-      <h1 className="text-4xl font-extrabold text-white mb-6">🛒 Marketplace</h1>
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-6">🛍️ Marketplace</h2>
 
-      {/* Добавяне на продукт */}
-      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md mb-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Добави продукт/услуга</h2>
+      {/* Product Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg shadow-md mb-6"
+      >
+        <h3 className="font-bold mb-4">Create a Product</h3>
         <input
           type="text"
-          placeholder="Заглавие"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-3 border rounded-lg mb-2"
+          name="title"
+          placeholder="Title"
+          value={form.title}
+          onChange={handleChange}
+          className="w-full p-2 border rounded mb-3"
+          required
         />
         <textarea
-          placeholder="Описание"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-3 border rounded-lg mb-2"
+          name="description"
+          placeholder="Description"
+          value={form.description}
+          onChange={handleChange}
+          className="w-full p-2 border rounded mb-3"
         />
         <input
           type="number"
-          placeholder="Цена (V-Coins)"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          className="w-full p-3 border rounded-lg mb-3"
+          name="price"
+          placeholder="Price"
+          value={form.price}
+          onChange={handleChange}
+          className="w-full p-2 border rounded mb-3"
+          required
+        />
+        <input
+          type="text"
+          name="image"
+          placeholder="Image URL"
+          value={form.image}
+          onChange={handleChange}
+          className="w-full p-2 border rounded mb-3"
+        />
+        <input
+          type="text"
+          name="category"
+          placeholder="Category"
+          value={form.category}
+          onChange={handleChange}
+          className="w-full p-2 border rounded mb-3"
         />
         <button
-          onClick={handleAddItem}
-          className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+          type="submit"
+          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
         >
-          ➕ Добави продукт
+          Publish
         </button>
-      </div>
+      </form>
 
-      {/* Листа с продукти */}
-      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-2xl">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Налични продукти</h2>
-        {items.length > 0 ? (
-          <ul className="space-y-4">
-            {items.map((item) => (
-              <li
-                key={item._id}
-                className="p-4 border rounded-lg flex justify-between items-center"
-              >
-                <div>
-                  <h3 className="text-lg font-bold">{item.title}</h3>
-                  <p className="text-sm text-gray-600">{item.description}</p>
-                  <p className="text-yellow-600 font-bold mt-1">{item.price} V-Coins</p>
-                </div>
-                <button
-                  onClick={() => handleBuyItem(item._id)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                >
-                  Купи
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500">Няма налични продукти</p>
-        )}
+      {/* Products List */}
+      <div className="grid md:grid-cols-3 gap-6">
+        {products.map((p) => (
+          <div
+            key={p._id}
+            className="bg-white p-4 rounded-lg shadow-md flex flex-col justify-between"
+          >
+            <img
+              src={p.image || "https://via.placeholder.com/150"}
+              alt={p.title}
+              className="w-full h-40 object-cover rounded mb-3"
+            />
+            <h3 className="font-bold">{p.title}</h3>
+            <p className="text-gray-600">{p.description}</p>
+            <p className="text-purple-600 font-bold mt-2">{p.price} V-Coins</p>
+            <p className="text-sm text-gray-500">Category: {p.category}</p>
+            <button
+              onClick={() => handleBuy(p._id)}
+              className="mt-3 bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700"
+            >
+              Buy
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
-}
+};
+
+export default Marketplace;
