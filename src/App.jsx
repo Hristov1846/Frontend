@@ -1,28 +1,31 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+
+// Страници
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-import Navbar from "./components/Navbar";
-import { AuthProvider } from "./context/AuthContext";
+import Wallet from "./pages/Wallet";
+import Assistant from "./pages/Assistant";
+import Live from "./pages/Live";
+import Marketplace from "./pages/Marketplace";
+import Chat from "./pages/Chat";
+import AdminDashboard from "./pages/AdminDashboard";
+
+// ProtectedRoute
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <AuthProvider>
-      <Navbar />
+    <div className="bg-gradient-to-r from-teal-500 to-blue-500 min-h-screen text-white">
       <Routes>
+        {/* Публични маршрути */}
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+
+        {/* Защитени маршрути */}
         <Route
           path="/profile/:id"
           element={
@@ -31,9 +34,62 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/" />} />
+
+        <Route
+          path="/wallet"
+          element={
+            <ProtectedRoute>
+              <Wallet />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/assistant"
+          element={
+            <ProtectedRoute>
+              <Assistant />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/live/:id"
+          element={
+            <ProtectedRoute>
+              <Live />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/marketplace"
+          element={
+            <ProtectedRoute>
+              <Marketplace />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/chat/:id"
+          element={
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-    </AuthProvider>
+    </div>
   );
 }
 
