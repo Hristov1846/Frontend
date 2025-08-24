@@ -1,36 +1,42 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-// Страници
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import Chat from "./pages/Chat";
 import Wallet from "./pages/Wallet";
 import Assistant from "./pages/Assistant";
 import Live from "./pages/Live";
 import Marketplace from "./pages/Marketplace";
-import Chat from "./pages/Chat";
 import AdminDashboard from "./pages/AdminDashboard";
-
-// ProtectedRoute
-import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <div className="bg-gradient-to-r from-teal-500 to-blue-500 min-h-screen text-white">
+    <Router>
+      <Navbar />
       <Routes>
-        {/* Публични маршрути */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Защитени маршрути */}
         <Route
-          path="/profile/:id"
+          path="/profile"
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/chat/:id"
+          element={
+            <ProtectedRoute>
+              <Chat />
             </ProtectedRoute>
           }
         />
@@ -72,24 +78,15 @@ function App() {
         />
 
         <Route
-          path="/chat/:id"
-          element={
-            <ProtectedRoute>
-              <Chat />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute adminOnly={true}>
               <AdminDashboard />
             </ProtectedRoute>
           }
         />
       </Routes>
-    </div>
+    </Router>
   );
 }
 
