@@ -1,25 +1,17 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import HomePage from "./pages/HomePage";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Profile from "./pages/Profile";
+import Home from "./pages/Home";
 
-function App() {
+export default function App() {
   return (
     <Router>
       <Navbar />
-      <div className="p-4">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<div>Login Page</div>} />
+        <Route path="/register" element={<div>Register Page</div>} />
+        <Route path="/profile" element={<div>Profile Page</div>} />
+      </Routes>
     </Router>
   );
 }
-
-export default App;
